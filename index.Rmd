@@ -1,26 +1,174 @@
 ---
-title       : Test deck
-subtitle    : 
-author      : 
-job         : 
+title       : Power Laws
+subtitle    : Grabbing the Dragon by the Tail
+author      : Raymond C
+job         : Practitioner of the Dark Data Arts
 framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
 highlighter : highlight.js  # {highlight.js, prettify, highlight}
 hitheme     : tomorrow      # 
-widgets     : []            # {mathjax, quiz, bootstrap}
+widgets     : [mathjax]     # {mathjax, quiz, bootstrap}
 mode        : selfcontained # {standalone, draft}
+knit        : slidify::knit2slides
 ---
 
-## Read-And-Delete
+## Introduction
 
-1. Edit YAML front matter
-2. Write using R Markdown
-3. Use an empty line followed by three dashes to separate slides!
+1. Many distributions in "Nature" follow power law distribution. E.g. the Internet, city sizes, etc
 
---- .class #id 
+2. Our web app displays the distribution of word frequencies of the novel Moby Dick
 
-## Slide 2
+3. This empirical distribution is best described by a power law which we fit with our model
 
-```{r, fig.height=5, fig.width=5}
-plot(1 : 10, 1 : 10)
+---
+
+## Power law distribution in log scale
+Empirical power law distributions have very fat tails hence logging both axes of the probability density functions is appropriate.
+```{r,echo=FALSE,warning=FALSE,fig.align='center',fig.width=13, fig.height=6}
+library(poweRlaw)
+library(ggplot2)
+library(gridExtra)
+library(dplyr)
+library(VGAM)
+
+modccdfCal <- function(xmin, raw_dat){
+  dif <- raw_dat$value - xmin
+  u <- which(dif > 0)[1]
+  l <- max(u - 1, 1)
+  x_dif <- raw_dat$value[l] - raw_dat$value[u]
+  y_dif <- raw_dat$ccdf[l] - raw_dat$ccdf[u]
+  scale <- raw_dat$ccdf[l] - y_dif*(xmin - 
+                                      raw_dat$value[l])/x_dif
+  
+  val <- ifelse(raw_dat$value >= xmin, raw_dat$value, NA)
+  a <- alphaCal(xmin, raw_dat)
+  mod <- scale*(val/xmin)^(1-a)
+  
+  return(mod)
+}
+
+modpdfCal <- function(xmin, raw_dat){
+  dif <- raw_dat$value - xmin
+  u <- which(dif > 0)[1]
+  l <- max(u - 1, 1)
+  x_dif <- raw_dat$value[l] - raw_dat$value[u]
+  y_dif <- raw_dat$ccdf[l] - raw_dat$ccdf[u]
+  scale <- raw_dat$ccdf[l] - y_dif*(xmin - 
+                                      raw_dat$value[l])/x_dif
+  
+  val <- ifelse(raw_dat$value >= xmin, raw_dat$value, NA)
+  a <- alphaCal(xmin, raw_dat)
+  mod <- scale*(a-1)/xmin*(val/xmin)^-a
+  
+  return(mod)
+}
+
+modcdfCal <- function(xmin, raw_dat){
+  dif <- raw_dat$value - xmin
+  u <- which(dif > 0)[1]
+  l <- max(u - 1, 1)
+  x_dif <- raw_dat$value[l] - raw_dat$value[u]
+  y_dif <- raw_dat$ccdf[l] - raw_dat$ccdf[u]
+  scale <- raw_dat$ccdf[l] - y_dif*(xmin - 
+                                      raw_dat$value[l])/x_dif
+  
+  val <- ifelse(raw_dat$value >= xmin, raw_dat$value, NA)
+  a <- alphaCal(xmin, raw_dat)
+  mod <- scale*(a-1)/xmin*(val/xmin)^-a
+  
+  return(mod)
+}
+
+alphaCal <- function(xmin, raw_dat){
+  p_val <- raw_dat$value[raw_dat$value >= xmin]
+  p_freq <- raw_dat$frequency[raw_dat$value >= xmin]
+  xmin <- min(p_val)
+  alpha <- 1 + (sum(p_freq)/(sum(p_freq*log(p_val)) - 
+                               sum(p_freq)*log(xmin-0.5)))
+  
+  return(alpha)
+}
+
+ksCal <- function(xmin, raw_dat){
+  alpha <- alphaCal(xmin, raw_dat)
+  
+  c <- zeta(alpha) - sum((1:(xmin-1))^-alpha)
+  if (c == 0)
+    dat_cdf <- rep(0, length(raw_dat$value))
+  else
+    dat_cdf <- cumsum((xmin:max(raw_dat$value))^-alpha)/c
+  
+  dat <- with(raw_dat, c(mapply(rep, value, frequency), 
+                         recursive=TRUE))
+  occur <- tabulate(dat)
+  if (xmin > 1)
+    occur <- occur[-(1:(xmin-1))]
+  
+  mod_cdf <- cumsum(occur/sum(occur))
+  ks <- max(abs(dat_cdf- mod_cdf), na.rm=TRUE)
+  
+  return(ks)
+}
+
+data(moby)
+tab <- table(moby)
+value <- as.numeric(names(tab))
+frequency <- as.vector(tab)
+raw_dat <- data.frame(value = value, frequency = frequency)
+
+raw_dat <- mutate(raw_dat, 
+                  pdf = frequency/sum(frequency),
+                  cdf = cumsum(pdf),
+                  ccdf = rev(cumsum(rev(pdf))))
+
+ks <- sapply(raw_dat$value, ksCal, raw_dat=raw_dat)
+i_xmin <- raw_dat$value[which(ks == min(ks))]
+
+y <- raw_dat$pdf
+x <- raw_dat$value
+dis <- data.frame(x = x, y = y)
+p1 <- ggplot(dis, aes(x = x, y = y)) + geom_point() +
+  xlab("Regular Scale") + ylab("Probability Density Function")
+
+y <- log(raw_dat$pdf)
+x <- log(raw_dat$value)
+dis <- data.frame(x = x, y = y)
+p2 <- ggplot(dis, aes(x = x, y = y)) + geom_point() +
+  xlab("Log Scale") + ylab("Probability Density Function")
+
+grid.arrange(p1, p2, ncol=2)
 ```
 
+---
+
+## Modelling the power law distribution
+
+1. In empirical distributions, the power law only applies to the tail of the distribution.
+
+2. The start point of the power law is refered to as $x_{min}$
+
+3. The power law has the form $$f(x) \propto x^{-\alpha}$$where $x$ is the value, $f(x)$ is the frequency of $x$ and $\alpha$ is the power law exponential
+
+---
+
+## Model fitted to the power law distribution
+
+The inverse cummulative distribution function of an empirical power law is straight line.
+```{r,echo=FALSE,warning=FALSE,fig.align='center',fig.width=13}
+y <- log(raw_dat$ccdf)
+my <- log(modccdfCal(i_xmin, raw_dat))
+x <- log(raw_dat$value)
+dis <- data.frame(x = x, y = y, my = my)
+p1 <- ggplot(dis, aes(x = x, y = y)) + geom_point() +
+  geom_line(aes(x = x, y = my), color = "red") + 
+  xlab("Values") + ylab("Inverse Cummulative Distribution Function")
+
+y <- log(raw_dat$pdf)
+my <- log(modpdfCal(i_xmin, raw_dat))
+x <- log(raw_dat$value)
+dis <- data.frame(x = x, y = y, my = my)
+p2 <- ggplot(dis, aes(x = x, y = y)) + geom_point() +
+  geom_line(aes(x = x, y = my), color = "red") + 
+  xlab("Values") + ylab("Probability Density Function")
+
+grid.arrange(p2, p1, ncol=2)
+```

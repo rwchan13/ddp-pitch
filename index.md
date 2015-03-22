@@ -1,30 +1,43 @@
 ---
-title       : Test deck
-subtitle    : 
-author      : 
-job         : 
+title       : Power Laws
+subtitle    : Grabbing the Dragon by the Tail
+author      : Raymond C
+job         : Practitioner of the Dark Data Arts
 framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
 highlighter : highlight.js  # {highlight.js, prettify, highlight}
 hitheme     : tomorrow      # 
-widgets     : []            # {mathjax, quiz, bootstrap}
+widgets     : [mathjax]     # {mathjax, quiz, bootstrap}
 mode        : selfcontained # {standalone, draft}
+knit        : slidify::knit2slides
 ---
 
-## Read-And-Delete
+## Introduction
 
-1. Edit YAML front matter
-2. Write using R Markdown
-3. Use an empty line followed by three dashes to separate slides!
+1. Many distributions in "Nature" follow power law distribution. E.g. the Internet, city sizes, etc
 
---- .class #id 
+2. Our web app displays the distribution of word frequencies of the novel Moby Dick
 
-## Slide 2
+3. This empirical distribution is best described by a power law which we fit with our model
 
+---
 
-```r
-plot(1:10, 1:10)
-```
+## Power law distribution in log scale
+Empirical power law distributions have very fat tails hence logging both axes of the probability density functions is appropriate.
+<img src="assets/fig/unnamed-chunk-1-1.png" title="plot of chunk unnamed-chunk-1" alt="plot of chunk unnamed-chunk-1" style="display: block; margin: auto;" />
 
-![plot of chunk unnamed-chunk-1](assets/fig/unnamed-chunk-1.png) 
+---
 
+## Modelling the power law distribution
 
+1. In empirical distributions, the power law only applies to the tail of the distribution.
+
+2. The start point of the power law is refered to as $x_{min}$
+
+3. The power law has the form $$f(x) \propto x^{-\alpha}$$where $x$ is the value, $f(x)$ is the frequency of $x$ and $\alpha$ is the power law exponential
+
+---
+
+## Model fitted to the power law distribution
+
+The inverse cummulative distribution function of an empirical power law is straight line.
+<img src="assets/fig/unnamed-chunk-2-1.png" title="plot of chunk unnamed-chunk-2" alt="plot of chunk unnamed-chunk-2" style="display: block; margin: auto;" />

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Test deck</title>
+  <title>Power Laws</title>
   <meta charset="utf-8">
-  <meta name="description" content="Test deck">
-  <meta name="author" content="">
+  <meta name="description" content="Power Laws">
+  <meta name="author" content="Raymond C">
   <meta name="generator" content="slidify" />
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta http-equiv="X-UA-Compatible" content="chrome=1">
@@ -32,9 +32,9 @@
     <!-- LOGO SLIDE -->
         <slide class="title-slide segue nobackground">
   <hgroup class="auto-fadein">
-    <h1>Test deck</h1>
-    <h2></h2>
-    <p><br/></p>
+    <h1>Power Laws</h1>
+    <h2>Grabbing the Dragon by the Tail</h2>
+    <p>Raymond C<br/>Practitioner of the Dark Data Arts</p>
   </hgroup>
   <article></article>  
 </slide>
@@ -43,28 +43,53 @@
     <!-- SLIDES -->
     <slide class="" id="slide-1" style="background:;">
   <hgroup>
-    <h2>Read-And-Delete</h2>
+    <h2>Introduction</h2>
   </hgroup>
   <article data-timings="">
     <ol>
-<li>Edit YAML front matter</li>
-<li>Write using R Markdown</li>
-<li>Use an empty line followed by three dashes to separate slides!</li>
+<li><p>Many distributions in &quot;Nature&quot; follow power law distribution. E.g. the Internet, city sizes, etc</p></li>
+<li><p>Our web app displays the distribution of word frequencies of the novel Moby Dick</p></li>
+<li><p>This empirical distribution is best described by a power law which we fit with our model</p></li>
 </ol>
 
   </article>
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="class" id="id" style="background:;">
+<slide class="" id="slide-2" style="background:;">
   <hgroup>
-    <h2>Slide 2</h2>
+    <h2>Power law distribution in log scale</h2>
   </hgroup>
   <article data-timings="">
-    <pre><code class="r">plot(1:10, 1:10)
-</code></pre>
+    <p>Empirical power law distributions have very fat tails hence logging both axes of the probability density functions is appropriate.
+<img src="assets/fig/unnamed-chunk-1-1.png" title="plot of chunk unnamed-chunk-1" alt="plot of chunk unnamed-chunk-1" style="display: block; margin: auto;" /></p>
 
-<p><img src="assets/fig/unnamed-chunk-1.png" alt="plot of chunk unnamed-chunk-1"> </p>
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>Modelling the power law distribution</h2>
+  </hgroup>
+  <article data-timings="">
+    <ol>
+<li><p>In empirical distributions, the power law only applies to the tail of the distribution.</p></li>
+<li><p>The start point of the power law is refered to as \(x_{min}\)</p></li>
+<li><p>The power law has the form \[f(x) \propto x^{-\alpha}\]where \(x\) is the value, \(f(x)\) is the frequency of \(x\) and \(\alpha\) is the power law exponential</p></li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>Model fitted to the power law distribution</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>The inverse cummulative distribution function of an empirical power law is straight line.
+<img src="assets/fig/unnamed-chunk-2-1.png" title="plot of chunk unnamed-chunk-2" alt="plot of chunk unnamed-chunk-2" style="display: block; margin: auto;" /></p>
 
   </article>
   <!-- Presenter Notes -->
@@ -76,14 +101,26 @@
     <ul>
       <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=1 title='Read-And-Delete'>
+        data-slide=1 title='Introduction'>
          1
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=2 title='Slide 2'>
+        data-slide=2 title='Power law distribution in log scale'>
          2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='Modelling the power law distribution'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='Model fitted to the power law distribution'>
+         4
       </a>
     </li>
   </ul>
@@ -96,7 +133,21 @@
 </body>
   <!-- Load Javascripts for Widgets -->
   
-  <!-- LOAD HIGHLIGHTER JS FILES -->
+  <!-- MathJax: Fall back to local if CDN offline but local image fonts are not supported (saves >100MB) -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        processEscapes: true
+      }
+    });
+  </script>
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <!-- <script src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script> -->
+  <script>window.MathJax || document.write('<script type="text/x-mathjax-config">MathJax.Hub.Config({"HTML-CSS":{imageFont:null}});<\/script><script src="libraries/widgets/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"><\/script>')
+</script>
+<!-- LOAD HIGHLIGHTER JS FILES -->
   <script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
   <script>hljs.initHighlightingOnLoad();</script>
   <!-- DONE LOADING HIGHLIGHTER JS FILES -->
